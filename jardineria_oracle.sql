@@ -1,12 +1,11 @@
-DROP TABLE OFICINAS CASCADE CONSTRAINTS;
-DROP TABLE EMPLEADOS CASCADE CONSTRAINTS;
-DROP TABLE GAMASPRODUCTOS CASCADE CONSTRAINTS;
-DROP TABLE CLIENTES CASCADE CONSTRAINTS;
-DROP TABLE DETALLEPEDIDOS CASCADE CONSTRAINTS;
-DROP TABLE PEDIDOS CASCADE CONSTRAINTS;
-DROP TABLE PRODUCTOS CASCADE CONSTRAINTS;
-DROP TABLE PAGOS CASCADE CONSTRAINTS;
-
+DROP TABLE GamasProductos CASCADE CONSTRAINTS;
+DROP TABLE Empleados CASCADE CONSTRAINTS;
+DROP TABLE Oficinas CASCADE CONSTRAINTS;
+DROP TABLE DetallePedidos CASCADE CONSTRAINTS;
+DROP TABLE Pedidos CASCADE CONSTRAINTS;
+DROP TABLE Pagos CASCADE CONSTRAINTS;
+DROP TABLE Clientes CASCADE CONSTRAINTS;
+DROP TABLE Productos CASCADE CONSTRAINTS;
 
 CREATE TABLE Oficinas (
   CodigoOficina varchar(10) NOT NULL,
@@ -17,7 +16,7 @@ CREATE TABLE Oficinas (
   Telefono varchar(20) NOT NULL,
   LineaDireccion1 varchar(50) NOT NULL,
   LineaDireccion2 varchar(50) DEFAULT NULL,
-  CONSTRAINT COD_OFI_PK PRIMARY KEY (CodigoOficina)
+  CONSTRAINT Ofi_Cod_PK PRIMARY KEY (CodigoOficina)
 ) ;
 
 INSERT INTO Oficinas VALUES ('BCN-ES','Barcelona','España','Barcelona','08019','+34 93 3561182','Avenida Diagonal, 38','3A escalera Derecha');
@@ -40,9 +39,9 @@ CREATE TABLE Empleados (
   CodigoOficina varchar(10) NOT NULL,
   CodigoJefe integer DEFAULT NULL,
   Puesto varchar(50) DEFAULT NULL,
-  CONSTRAINT COD_EMP_PK PRIMARY KEY (CodigoEmpleado),
-  CONSTRAINT Empleados_OficinasFK FOREIGN KEY (CodigoOficina) REFERENCES Oficinas (CodigoOficina),
-  CONSTRAINT Empleados_EmpleadosFK FOREIGN KEY (CodigoJefe) REFERENCES Empleados (CodigoEmpleado)
+  CONSTRAINT Emple_Cod_PK PRIMARY KEY (CodigoEmpleado),
+  CONSTRAINT Emple_OficinasFK FOREIGN KEY (CodigoOficina) REFERENCES Oficinas (CodigoOficina),
+  CONSTRAINT Emple_EmpleadosFK FOREIGN KEY (CodigoJefe) REFERENCES Empleados (CodigoEmpleado)
 );
 
 INSERT INTO Empleados VALUES (1,'Marcos','Magaña','Perez','3897','marcos@jardineria.es','TAL-ES',NULL,'Director General');
@@ -76,13 +75,12 @@ INSERT INTO Empleados VALUES (28,'John','Walton','','3322','jwalton@gardening.co
 INSERT INTO Empleados VALUES (29,'Kevin','Fallmer','','3210','kfalmer@gardening.com','SYD-AU',3,'Director Oficina');
 INSERT INTO Empleados VALUES (30,'Julian','Bellinelli','','3211','jbellinelli@gardening.com','SYD-AU',29,'Representante Ventas');
 INSERT INTO Empleados VALUES (31,'Mariko','Kishi','','3211','mkishi@gardening.com','SYD-AU',29,'Representante Ventas');
-
 CREATE TABLE GamasProductos (
   Gama varchar(50) NOT NULL,
   DescripcionTexto clob,
   DescripcionHTML clob,
   Imagen blob,
-  CONSTRAINT GAMA_PK PRIMARY KEY (INITCAP(Gama))
+  CONSTRAINT GProdu_Cod_PK PRIMARY KEY (Gama)
 );
 INSERT INTO GamasProductos VALUES ('Herbaceas','Plantas para jardin decorativas',NULL,NULL);
 INSERT INTO GamasProductos VALUES ('Herramientas','Herramientas para todo tipo de acción',NULL,NULL);
@@ -107,8 +105,8 @@ CREATE TABLE Clientes (
   CodigoPostal varchar(10) DEFAULT NULL,
   CodigoEmpleadoRepVentas integer DEFAULT NULL,
   LimiteCredito number(15,2) DEFAULT NULL,
-  CONSTRAINT COD_CLIENTE_PK PRIMARY KEY (CodigoCliente),
-  CONSTRAINT Clientes_EmpleadosFK FOREIGN KEY (CodigoEmpleadoRepVentas) REFERENCES Empleados (CodigoEmpleado)
+  CONSTRAINT Clientes_Cod_PK PRIMARY KEY (CodigoCliente),
+  CONSTRAINT Clientes_Empleados_FK FOREIGN KEY (CodigoEmpleadoRepVentas) REFERENCES Empleados (CodigoEmpleado)
 ) ;
 
 INSERT INTO Clientes VALUES (1,'DGPRODUCTIONS GARDEN','Daniel G','GoldFish','5556901745','5556901746','False Street 52 2 A',NULL,'San Francisco',NULL,'USA','24006',19,3000);
@@ -156,126 +154,126 @@ CREATE TABLE Pedidos (
   Estado varchar(15) NOT NULL,
   Comentarios CLOB,
   CodigoCliente integer NOT NULL,
-  CONSTRAINT COD_PEDIDO_PK PRIMARY KEY (CodigoPedido),
-  CONSTRAINT Pedidos_Cliente FOREIGN KEY (CodigoCliente) REFERENCES Clientes (CodigoCliente)
+  CONSTRAINT Pedidos_Cod_PK PRIMARY KEY (CodigoPedido),
+  CONSTRAINT Pedidos_Cliente_FK FOREIGN KEY (CodigoCliente) REFERENCES Clientes (CodigoCliente)
 );
 alter session set nls_date_format='yyyy-mm-dd';
 
-INSERT INTO Pedidos VALUES (1,'2006-01-17','2006-01-19','2006-01-19','Entregado','Pagado a plazos',5);
-INSERT INTO Pedidos VALUES (2,'2007-10-23','2007-10-28','2007-10-26','Entregado','La entrega llego antes de lo esperado',5);
-INSERT INTO Pedidos VALUES (3,'2008-06-20','2008-06-25',NULL,'Rechazado','Limite de credito superado',5);
-INSERT INTO Pedidos VALUES (4,'2009-01-20','2009-01-26',NULL,'Pendiente',NULL,5);
-INSERT INTO Pedidos VALUES (8,'2008-11-09','2008-11-14','2008-11-14','Entregado','El cliente paga la mitad con tarjeta y la otra mitad con efectivo, se le realizan dos facturas',1);
-INSERT INTO Pedidos VALUES (9,'2008-12-22','2008-12-27','2008-12-28','Entregado','El cliente comprueba la integridad del paquete, todo correcto',1);
-INSERT INTO Pedidos VALUES (10,'2009-01-15','2009-01-20',NULL,'Pendiente','El cliente llama para confirmar la fecha - Esperando al proveedor',3);
-INSERT INTO Pedidos VALUES (11,'2009-01-20','2009-01-27',NULL,'Pendiente','El cliente requiere que el pedido se le entregue de 16:00h a 22:00h',1);
-INSERT INTO Pedidos VALUES (12,'2009-01-22','2009-01-27',NULL,'Pendiente','El cliente requiere que el pedido se le entregue de 9:00h a 13:00h',1);
-INSERT INTO Pedidos VALUES (13,'2009-01-12','2009-01-14','2009-01-15','entregado',NULL,7);
-INSERT INTO Pedidos VALUES (14,'2009-01-02','2009-01-02',null,'rechazado','mal pago',7);
-INSERT INTO Pedidos VALUES (15,'2009-01-09','2009-01-12','2009-01-11','entregado',NULL,7);
-INSERT INTO Pedidos VALUES (16,'2009-01-06','2009-01-07','2009-01-15','entregado',NULL,7);
-INSERT INTO Pedidos VALUES (17,'2009-01-08','2009-01-09','2009-01-11','entregado','mal estado',7);
-INSERT INTO Pedidos VALUES (18,'2009-01-05','2009-01-06','2009-01-07','entregado',NULL,9);
-INSERT INTO Pedidos VALUES (19,'2009-01-18','2009-02-12',NULL,'pendiente','entregar en murcia',9);
-INSERT INTO Pedidos VALUES (20,'2009-01-20','2009-02-15',NULL,'pendiente',NULL,9);
-INSERT INTO Pedidos VALUES (21,'2009-01-09','2009-01-09','2009-01-09','rechazado','mal pago',9);
-INSERT INTO Pedidos VALUES (22,'2009-01-11','2009-01-11','2009-01-13','entregado',NULL,9);
-INSERT INTO Pedidos VALUES (23,'2008-12-30','2009-01-10',NULL,'Rechazado','El pedido fue anulado por el cliente',5);
-INSERT INTO Pedidos VALUES (24,'2008-07-14','2008-07-31','2008-07-25','Entregado',NULL,14);
-INSERT INTO Pedidos VALUES (25,'2009-02-02','2009-02-08',NULL,'Rechazado','El cliente carece de saldo en la cuenta asociada',1);
-INSERT INTO Pedidos VALUES (26,'2009-02-06','2009-02-12',NULL,'Rechazado','El cliente anula la operacion para adquirir mas productos',3);
-INSERT INTO Pedidos VALUES (27,'2009-02-07','2009-02-13',NULL,'Entregado','El pedido aparece como entregado pero no sabemos en que fecha',3);
-INSERT INTO Pedidos VALUES (28,'2009-02-10','2009-02-17','2009-02-20','Entregado','El cliente se queja bastante de la espera asociada al producto',3);
-INSERT INTO Pedidos VALUES (29,'2008-08-01','2008-09-01','2008-09-01','Rechazado','El cliente no está conforme con el pedido',14);
-INSERT INTO Pedidos VALUES (30,'2008-08-03','2008-09-03','2008-08-31','Entregado',NULL,13);
-INSERT INTO Pedidos VALUES (31,'2008-09-04','2008-09-30','2008-10-04','Rechazado','El cliente ha rechazado por llegar 5 dias tarde',13);
-INSERT INTO Pedidos VALUES (32,'2007-01-07','2007-01-19','2007-01-27','Entregado','Entrega tardia, el cliente puso reclamacion',4);
-INSERT INTO Pedidos VALUES (33,'2007-05-20','2007-05-28',NULL,'Rechazado','El pedido fue anulado por el cliente',4);
-INSERT INTO Pedidos VALUES (34,'2007-06-20','2008-06-28','2008-06-28','Entregado','Pagado a plazos',4);
-INSERT INTO Pedidos VALUES (35,'2008-03-10','2009-03-20',NULL,'Rechazado','Limite de credito superado',4);
-INSERT INTO Pedidos VALUES (36,'2008-10-15','2008-12-15','2008-12-10','Entregado',NULL,14);
-INSERT INTO Pedidos VALUES (37,'2008-11-03','2009-11-13',NULL,'Pendiente','El pedido nunca llego a su destino',4);
-INSERT INTO Pedidos VALUES (38,'2009-03-05','2009-03-06','2009-03-07','Entregado',NULL,19);
-INSERT INTO Pedidos VALUES (39,'2009-03-06','2009-03-07','2009-03-09','Pendiente',NULL,19);
-INSERT INTO Pedidos VALUES (40,'2009-03-09','2009-03-10','2009-03-13','Rechazado',NULL,19);
-INSERT INTO Pedidos VALUES (41,'2009-03-12','2009-03-13','2009-03-13','Entregado',NULL,19);
-INSERT INTO Pedidos VALUES (42,'2009-03-22','2009-03-23','2009-03-27','Entregado',NULL,19);
-INSERT INTO Pedidos VALUES (43,'2009-03-25','2009-03-26','2009-03-28','Pendiente',NULL,23);
-INSERT INTO Pedidos VALUES (44,'2009-03-26','2009-03-27','2009-03-30','Pendiente',NULL,23);
-INSERT INTO Pedidos VALUES (45,'2009-04-01','2009-03-04','2009-03-07','Entregado',NULL,23);
-INSERT INTO Pedidos VALUES (46,'2009-04-03','2009-03-04','2009-03-05','Rechazado',NULL,23);
-INSERT INTO Pedidos VALUES (47,'2009-04-15','2009-03-17','2009-03-17','Entregado',NULL,23);
-INSERT INTO Pedidos VALUES (48,'2008-03-17','2008-03-30','2008-03-29','Entregado','Según el Cliente, el pedido llegó defectuoso',26);
-INSERT INTO Pedidos VALUES (49,'2008-07-12','2008-07-22','2008-07-23','Entregado','El pedido llegó 1 día tarde, pero no hubo queja por parte de la empresa compradora',26);
-INSERT INTO Pedidos VALUES (50,'2008-03-17','2008-08-09',NULL,'Pendiente','Al parecer, el pedido se ha extraviado a la altura de Sotalbo (�?vila)',26);
-INSERT INTO Pedidos VALUES (51,'2008-10-01','2008-10-14','2008-10-14','Entregado','Todo se entregó a tiempo y en perfecto estado, a pesar del pésimo estado de las carreteras.',26);
-INSERT INTO Pedidos VALUES (52,'2008-12-07','2008-12-21',NULL,'Pendiente','El transportista ha llamado a Eva María para indicarle que el pedido llegará más tarde de lo esperado.',26);
-INSERT INTO Pedidos VALUES (53,'2008-10-15','2008-11-15','2008-11-09','Entregado','El pedido llega 6 dias antes',13);
-INSERT INTO Pedidos VALUES (54,'2009-01-11','2009-02-11',NULL,'Pendiente',NULL,14);
-INSERT INTO Pedidos VALUES (55,'2008-12-10','2009-01-10','2009-01-11','Entregado','Retrasado 1 dia por problemas de transporte',14);
-INSERT INTO Pedidos VALUES (56,'2008-12-19','2009-01-20',NULL,'Rechazado','El cliente a anulado el pedido el dia 2009-01-10',13);
-INSERT INTO Pedidos VALUES (57,'2009-01-05','2009-02-05',NULL,'Pendiente',NULL,13);
-INSERT INTO Pedidos VALUES (58,'2009-01-24','2009-01-31','2009-01-30','Entregado','TODO CORRECTO',3);
-INSERT INTO Pedidos VALUES (59,'2008-11-09','2008-11-14','2008-11-14','Entregado','El cliente paga la mitad con tarjeta y la otra mitad con efectivo, se le realizan dos facturas',1);
-INSERT INTO Pedidos VALUES (60,'2008-12-22','2008-12-27','2008-12-28','Entregado','El cliente comprueba la integridad del paquete, todo correcto',1);
-INSERT INTO Pedidos VALUES (61,'2009-01-15','2009-01-20',NULL,'Pendiente','El cliente llama para confirmar la fecha - Esperando al proveedor',3);
-INSERT INTO Pedidos VALUES (62,'2009-01-20','2009-01-27',NULL,'Pendiente','El cliente requiere que el pedido se le entregue de 16:00h a 22:00h',1);
-INSERT INTO Pedidos VALUES (63,'2009-01-22','2009-01-27',NULL,'Pendiente','El cliente requiere que el pedido se le entregue de 9:00h a 13:00h',1);
-INSERT INTO Pedidos VALUES (64,'2009-01-24','2009-01-31','2009-01-30','Entregado','TODO CORRECTO',1);
-INSERT INTO Pedidos VALUES (65,'2009-02-02','2009-02-08',NULL,'Rechazado','El cliente carece de saldo en la cuenta asociada',1);
-INSERT INTO Pedidos VALUES (66,'2009-02-06','2009-02-12',NULL,'Rechazado','El cliente anula la operacion para adquirir mas productos',3);
-INSERT INTO Pedidos VALUES (67,'2009-02-07','2009-02-13',NULL,'Entregado','El pedido aparece como entregado pero no sabemos en que fecha',3);
-INSERT INTO Pedidos VALUES (68,'2009-02-10','2009-02-17','2009-02-20','Entregado','El cliente se queja bastante de la espera asociada al producto',3);
-INSERT INTO Pedidos VALUES (74,'2009-01-14','2009-01-22',NULL,'Rechazado','El pedido no llego el dia que queria el cliente por fallo del transporte',15);
-INSERT INTO Pedidos VALUES (75,'2009-01-11','2009-01-13','2009-01-13','Entregado','El pedido llego perfectamente',15);
-INSERT INTO Pedidos VALUES (76,'2008-11-15','2008-11-23','2008-11-23','Entregado',NULL,15);
-INSERT INTO Pedidos VALUES (77,'2009-01-03','2009-01-08',NULL,'Pendiente','El pedido no pudo ser entregado por problemas meteorologicos',15);
-INSERT INTO Pedidos VALUES (78,'2008-12-15','2008-12-17','2008-12-17','Entregado','Fue entregado, pero faltaba mercancia que sera entregada otro dia',15);
-INSERT INTO Pedidos VALUES (79,'2009-01-12','2009-01-13','2009-01-13','Entregado',NULL,28);
-INSERT INTO Pedidos VALUES (80,'2009-01-25','2009-01-26',NULL,'Pendiente','No terminó el pago',28);
-INSERT INTO Pedidos VALUES (81,'2009-01-18','2009-01-24',NULL,'Rechazado','Los productos estaban en mal estado',28);
-INSERT INTO Pedidos VALUES (82,'2009-01-20','2009-01-29','2009-01-29','Entregado','El pedido llego un poco mas tarde de la hora fijada',28);
-INSERT INTO Pedidos VALUES (83,'2009-01-24','2009-01-28',NULL,'Entregado',NULL,28);
-INSERT INTO Pedidos VALUES (89,'2007-10-05','2007-12-13','2007-12-10','Entregado','La entrega se realizo dias antes de la fecha esperada por lo que el cliente quedo satisfecho',35);
-INSERT INTO Pedidos VALUES (90,'2009-02-07','2008-02-17',NULL,'Pendiente','Debido a la nevada caída en la sierra, el pedido no podrá llegar hasta el día ',27);
-INSERT INTO Pedidos VALUES (91,'2009-03-18','2009-03-29','2009-03-27','Entregado','Todo se entregó a su debido tiempo, incluso con un día de antelación',27);
-INSERT INTO Pedidos VALUES (92,'2009-04-19','2009-04-30','2009-05-03','Entregado','El pedido se entregó tarde debido a la festividad celebrada en España durante esas fechas',27);
-INSERT INTO Pedidos VALUES (93,'2009-05-03','2009-05-30','2009-05-17','Entregado','El pedido se entregó antes de lo esperado.',27);
-INSERT INTO Pedidos VALUES (94,'2009-10-18','2009-11-01',NULL,'Pendiente','El pedido está en camino.',27);
-INSERT INTO Pedidos VALUES (95,'2008-01-04','2008-01-19','2008-01-19','Entregado',NULL,35);
-INSERT INTO Pedidos VALUES (96,'2008-03-20','2008-04-12','2008-04-13','Entregado','La entrega se retraso un dia',35);
-INSERT INTO Pedidos VALUES (97,'2008-10-08','2008-11-25','2008-11-25','Entregado',NULL,35);
-INSERT INTO Pedidos VALUES (98,'2009-01-08','2009-02-13',NULL,'Pendiente',NULL,35);
-INSERT INTO Pedidos VALUES (99,'2009-02-15','2009-02-27',NULL,'Pendiente',NULL,16);
-INSERT INTO Pedidos VALUES (100,'2009-01-10','2009-01-15','2009-01-15','Entregado','El pedido llego perfectamente',16);
-INSERT INTO Pedidos VALUES (101,'2009-03-07','2009-03-27',NULL,'Rechazado','El pedido fue rechazado por el cliente',16);
-INSERT INTO Pedidos VALUES (102,'2008-12-28','2009-01-08','2009-01-08','Entregado','Pago pendiente',16);
-INSERT INTO Pedidos VALUES (103,'2009-01-15','2009-01-20','2009-01-24','Pendiente',NULL,30);
-INSERT INTO Pedidos VALUES (104,'2009-03-02','2009-03-06','2009-03-06','Entregado',NULL,30);
-INSERT INTO Pedidos VALUES (105,'2009-02-14','2009-02-20',NULL,'Rechazado','el producto ha sido rechazado por la pesima calidad',30);
-INSERT INTO Pedidos VALUES (106,'2009-05-13','2009-05-15','2009-05-20','Pendiente',NULL,30);
-INSERT INTO Pedidos VALUES (107,'2009-04-06','2009-04-10','2009-04-10','Entregado',NULL,30);
-INSERT INTO Pedidos VALUES (108,'2009-04-09','2009-04-15','2009-04-15','Entregado',NULL,16);
-INSERT INTO Pedidos VALUES (109,'2006-05-25','2006-07-28','2006-07-28','Entregado',NULL,38);
-INSERT INTO Pedidos VALUES (110,'2007-03-19','2007-04-24','2007-04-24','Entregado',NULL,38);
-INSERT INTO Pedidos VALUES (111,'2008-03-05','2008-03-30','2008-03-30','Entregado',NULL,36);
-INSERT INTO Pedidos VALUES (112,'2009-03-05','2009-04-06','2009-05-07','Pendiente',NULL,36);
-INSERT INTO Pedidos VALUES (113,'2008-10-28','2008-11-09','2009-01-09','Rechazado','El producto ha sido rechazado por la tardanza de el envio',36);
-INSERT INTO Pedidos VALUES (114,'2009-01-15','2009-01-29','2009-01-31','Entregado','El envio llego dos dias más tarde debido al mal tiempo',36);
-INSERT INTO Pedidos VALUES (115,'2008-11-29','2009-01-26','2009-02-27','Pendiente',NULL,36);
-INSERT INTO Pedidos VALUES (116,'2008-06-28','2008-08-01','2008-08-01','Entregado',NULL,38);
-INSERT INTO Pedidos VALUES (117,'2008-08-25','2008-10-01',NULL,'Rechazado','El pedido ha sido rechazado por la acumulacion de pago pendientes del cliente',38);
-INSERT INTO Pedidos VALUES (118,'2009-02-15','2009-02-27',NULL,'Pendiente',NULL,16);
-INSERT INTO Pedidos VALUES (119,'2009-01-10','2009-01-15','2009-01-15','Entregado','El pedido llego perfectamente',16);
-INSERT INTO Pedidos VALUES (120,'2009-03-07','2009-03-27',NULL,'Rechazado','El pedido fue rechazado por el cliente',16);
-INSERT INTO Pedidos VALUES (121,'2008-12-28','2009-01-08','2009-01-08','Entregado','Pago pendiente',16);
-INSERT INTO Pedidos VALUES (122,'2009-04-09','2009-04-15','2009-04-15','Entregado',NULL,16);
-INSERT INTO Pedidos VALUES (123,'2009-01-15','2009-01-20','2009-01-24','Pendiente',NULL,30);
-INSERT INTO Pedidos VALUES (124,'2009-03-02','2009-03-06','2009-03-06','Entregado',NULL,30);
-INSERT INTO Pedidos VALUES (125,'2009-02-14','2009-02-20',NULL,'Rechazado','el producto ha sido rechazado por la pesima calidad',30);
-INSERT INTO Pedidos VALUES (126,'2009-05-13','2009-05-15','2009-05-20','Pendiente',NULL,30);
-INSERT INTO Pedidos VALUES (127,'2009-04-06','2009-04-10','2009-04-10','Entregado',NULL,30);
-INSERT INTO Pedidos VALUES (128,'2008-11-10','2008-12-10','2008-12-29','Rechazado','El pedido ha sido rechazado por el cliente por el retraso en la entrega',38);
+INSERT INTO Pedidos VALUES (1,TO_DATE('2008-01-17','YYYY-MM-DD'),TO_DATE('2008-01-19','YYYY-MM-DD'),TO_DATE('2008-01-19','YYYY-MM-DD'),'Entregado','Pagado a plazos',5);
+INSERT INTO Pedidos VALUES (2,TO_DATE('2008-10-23','YYYY-MM-DD'),TO_DATE('2008-10-28','YYYY-MM-DD'),TO_DATE('2008-10-26','YYYY-MM-DD'),'Entregado','La entrega llego antes de lo esperado',5);
+INSERT INTO Pedidos VALUES (3,TO_DATE('2008-06-20','YYYY-MM-DD'),TO_DATE('2008-06-25','YYYY-MM-DD'),NULL,'Rechazado','Limite de credito superado',5);
+INSERT INTO Pedidos VALUES (4,TO_DATE('2008-01-20','YYYY-MM-DD'),TO_DATE('2008-01-26','YYYY-MM-DD'),NULL,'Pendiente',NULL,5);
+INSERT INTO Pedidos VALUES (8,TO_DATE('2008-11-09','YYYY-MM-DD'),TO_DATE('2008-11-14','YYYY-MM-DD'),TO_DATE('2008-11-14','YYYY-MM-DD'),'Entregado','El cliente paga la mitad con tarjeta y la otra mitad con efectivo, se le realizan dos facturas',1);
+INSERT INTO Pedidos VALUES (9,TO_DATE('2008-12-22','YYYY-MM-DD'),TO_DATE('2008-12-27','YYYY-MM-DD'),TO_DATE('2008-12-28','YYYY-MM-DD'),'Entregado','El cliente comprueba la integridad del paquete, todo correcto',1);
+INSERT INTO Pedidos VALUES (10,TO_DATE('2008-01-15','YYYY-MM-DD'),TO_DATE('2008-01-20','YYYY-MM-DD'),NULL,'Pendiente','El cliente llama para confirmar la fecha - Esperando al proveedor',3);
+INSERT INTO Pedidos VALUES (11,TO_DATE('2008-01-20','YYYY-MM-DD'),TO_DATE('2008-01-27','YYYY-MM-DD'),NULL,'Pendiente','El cliente requiere que el pedido se le entregue de 16:00h a 22:00h',1);
+INSERT INTO Pedidos VALUES (12,TO_DATE('2008-01-22','YYYY-MM-DD'),TO_DATE('2008-01-27','YYYY-MM-DD'),NULL,'Pendiente','El cliente requiere que el pedido se le entregue de 9:00h a 13:00h',1);
+INSERT INTO Pedidos VALUES (13,TO_DATE('2008-01-12','YYYY-MM-DD'),TO_DATE('2008-01-14','YYYY-MM-DD'),TO_DATE('2008-01-15','YYYY-MM-DD'),'entregado',NULL,7);
+INSERT INTO Pedidos VALUES (14,TO_DATE('2008-01-02','YYYY-MM-DD'),TO_DATE('2008-01-02','YYYY-MM-DD'),null,'rechazado','mal pago',7);
+INSERT INTO Pedidos VALUES (15,TO_DATE('2008-01-09','YYYY-MM-DD'),TO_DATE('2008-01-12','YYYY-MM-DD'),TO_DATE('2008-01-11','YYYY-MM-DD'),'entregado',NULL,7);
+INSERT INTO Pedidos VALUES (16,TO_DATE('2008-01-06','YYYY-MM-DD'),TO_DATE('2008-01-07','YYYY-MM-DD'),TO_DATE('2008-01-15','YYYY-MM-DD'),'entregado',NULL,7);
+INSERT INTO Pedidos VALUES (17,TO_DATE('2008-01-08','YYYY-MM-DD'),TO_DATE('2008-01-09','YYYY-MM-DD'),TO_DATE('2008-01-11','YYYY-MM-DD'),'entregado','mal estado',7);
+INSERT INTO Pedidos VALUES (18,TO_DATE('2008-01-05','YYYY-MM-DD'),TO_DATE('2008-01-06','YYYY-MM-DD'),TO_DATE('2008-01-07','YYYY-MM-DD'),'entregado',NULL,9);
+INSERT INTO Pedidos VALUES (19,TO_DATE('2008-01-18','YYYY-MM-DD'),TO_DATE('2008-02-12','YYYY-MM-DD'),NULL,'pendiente','entregar en murcia',9);
+INSERT INTO Pedidos VALUES (20,TO_DATE('2008-01-20','YYYY-MM-DD'),TO_DATE('2008-02-15','YYYY-MM-DD'),NULL,'pendiente',NULL,9);
+INSERT INTO Pedidos VALUES (21,TO_DATE('2008-01-09','YYYY-MM-DD'),TO_DATE('2008-01-09','YYYY-MM-DD'),TO_DATE('2008-01-09','YYYY-MM-DD'),'rechazado','mal pago',9);
+INSERT INTO Pedidos VALUES (22,TO_DATE('2008-01-11','YYYY-MM-DD'),TO_DATE('2008-01-11','YYYY-MM-DD'),TO_DATE('2008-01-13','YYYY-MM-DD'),'entregado',NULL,9);
+INSERT INTO Pedidos VALUES (23,TO_DATE('2008-12-30','YYYY-MM-DD'),TO_DATE('2008-01-10','YYYY-MM-DD'),NULL,'Rechazado','El pedido fue anulado por el cliente',5);
+INSERT INTO Pedidos VALUES (24,TO_DATE('2008-07-14','YYYY-MM-DD'),TO_DATE('2008-07-31','YYYY-MM-DD'),TO_DATE('2008-07-25','YYYY-MM-DD'),'Entregado',NULL,14);
+INSERT INTO Pedidos VALUES (25,TO_DATE('2008-02-02','YYYY-MM-DD'),TO_DATE('2008-02-08','YYYY-MM-DD'),NULL,'Rechazado','El cliente carece de saldo en la cuenta asociada',1);
+INSERT INTO Pedidos VALUES (26,TO_DATE('2008-02-06','YYYY-MM-DD'),TO_DATE('2008-02-12','YYYY-MM-DD'),NULL,'Rechazado','El cliente anula la operacion para adquirir mas productos',3);
+INSERT INTO Pedidos VALUES (27,TO_DATE('2008-02-07','YYYY-MM-DD'),TO_DATE('2008-02-13','YYYY-MM-DD'),NULL,'Entregado','El pedido aparece como entregado pero no sabemos en que fecha',3);
+INSERT INTO Pedidos VALUES (28,TO_DATE('2008-02-10','YYYY-MM-DD'),TO_DATE('2008-02-17','YYYY-MM-DD'),TO_DATE('2008-02-20','YYYY-MM-DD'),'Entregado','El cliente se queja bastante de la espera asociada al producto',3);
+INSERT INTO Pedidos VALUES (29,TO_DATE('2008-08-01','YYYY-MM-DD'),TO_DATE('2008-09-01','YYYY-MM-DD'),TO_DATE('2008-09-01','YYYY-MM-DD'),'Rechazado','El cliente no está conforme con el pedido',14);
+INSERT INTO Pedidos VALUES (30,TO_DATE('2008-08-03','YYYY-MM-DD'),TO_DATE('2008-09-03','YYYY-MM-DD'),TO_DATE('2008-08-31','YYYY-MM-DD'),'Entregado',NULL,13);
+INSERT INTO Pedidos VALUES (31,TO_DATE('2008-09-04','YYYY-MM-DD'),TO_DATE('2008-09-30','YYYY-MM-DD'),TO_DATE('2008-10-04','YYYY-MM-DD'),'Rechazado','El cliente ha rechazado por llegar 5 dias tarde',13);
+INSERT INTO Pedidos VALUES (32,TO_DATE('2008-01-07','YYYY-MM-DD'),TO_DATE('2008-01-19','YYYY-MM-DD'),TO_DATE('2008-01-27','YYYY-MM-DD'),'Entregado','Entrega tardia, el cliente puso reclamacion',4);
+INSERT INTO Pedidos VALUES (33,TO_DATE('2008-05-20','YYYY-MM-DD'),TO_DATE('2008-05-28','YYYY-MM-DD'),NULL,'Rechazado','El pedido fue anulado por el cliente',4);
+INSERT INTO Pedidos VALUES (34,TO_DATE('2008-06-20','YYYY-MM-DD'),TO_DATE('2008-06-28','YYYY-MM-DD'),TO_DATE('2008-06-28','YYYY-MM-DD'),'Entregado','Pagado a plazos',4);
+INSERT INTO Pedidos VALUES (35,TO_DATE('2008-03-10','YYYY-MM-DD'),TO_DATE('2008-03-20','YYYY-MM-DD'),NULL,'Rechazado','Limite de credito superado',4);
+INSERT INTO Pedidos VALUES (36,TO_DATE('2008-10-15','YYYY-MM-DD'),TO_DATE('2008-12-15','YYYY-MM-DD'),TO_DATE('2008-12-10','YYYY-MM-DD'),'Entregado',NULL,14);
+INSERT INTO Pedidos VALUES (37,TO_DATE('2008-11-03','YYYY-MM-DD'),TO_DATE('2008-11-13','YYYY-MM-DD'),NULL,'Pendiente','El pedido nunca llego a su destino',4);
+INSERT INTO Pedidos VALUES (38,TO_DATE('2008-03-05','YYYY-MM-DD'),TO_DATE('2008-03-06','YYYY-MM-DD'),TO_DATE('2008-03-07','YYYY-MM-DD'),'Entregado',NULL,19);
+INSERT INTO Pedidos VALUES (39,TO_DATE('2008-03-06','YYYY-MM-DD'),TO_DATE('2008-03-07','YYYY-MM-DD'),TO_DATE('2008-03-09','YYYY-MM-DD'),'Pendiente',NULL,19);
+INSERT INTO Pedidos VALUES (40,TO_DATE('2008-03-09','YYYY-MM-DD'),TO_DATE('2008-03-10','YYYY-MM-DD'),TO_DATE('2008-03-13','YYYY-MM-DD'),'Rechazado',NULL,19);
+INSERT INTO Pedidos VALUES (41,TO_DATE('2008-03-12','YYYY-MM-DD'),TO_DATE('2008-03-13','YYYY-MM-DD'),TO_DATE('2008-03-13','YYYY-MM-DD'),'Entregado',NULL,19);
+INSERT INTO Pedidos VALUES (42,TO_DATE('2008-03-22','YYYY-MM-DD'),TO_DATE('2008-03-23','YYYY-MM-DD'),TO_DATE('2008-03-27','YYYY-MM-DD'),'Entregado',NULL,19);
+INSERT INTO Pedidos VALUES (43,TO_DATE('2008-03-25','YYYY-MM-DD'),TO_DATE('2008-03-26','YYYY-MM-DD'),TO_DATE('2008-03-28','YYYY-MM-DD'),'Pendiente',NULL,23);
+INSERT INTO Pedidos VALUES (44,TO_DATE('2008-03-26','YYYY-MM-DD'),TO_DATE('2008-03-27','YYYY-MM-DD'),TO_DATE('2008-03-30','YYYY-MM-DD'),'Pendiente',NULL,23);
+INSERT INTO Pedidos VALUES (45,TO_DATE('2008-04-01','YYYY-MM-DD'),TO_DATE('2008-03-04','YYYY-MM-DD'),TO_DATE('2008-03-07','YYYY-MM-DD'),'Entregado',NULL,23);
+INSERT INTO Pedidos VALUES (46,TO_DATE('2008-04-03','YYYY-MM-DD'),TO_DATE('2008-03-04','YYYY-MM-DD'),TO_DATE('2008-03-05','YYYY-MM-DD'),'Rechazado',NULL,23);
+INSERT INTO Pedidos VALUES (47,TO_DATE('2008-04-15','YYYY-MM-DD'),TO_DATE('2008-03-17','YYYY-MM-DD'),TO_DATE('2008-03-17','YYYY-MM-DD'),'Entregado',NULL,23);
+INSERT INTO Pedidos VALUES (48,TO_DATE('2008-03-17','YYYY-MM-DD'),TO_DATE('2008-03-30','YYYY-MM-DD'),TO_DATE('2008-03-29','YYYY-MM-DD'),'Entregado','Según el Cliente, el pedido llegó defectuoso',26);
+INSERT INTO Pedidos VALUES (49,TO_DATE('2008-07-12','YYYY-MM-DD'),TO_DATE('2008-07-22','YYYY-MM-DD'),TO_DATE('2008-07-23','YYYY-MM-DD'),'Entregado','El pedido llegó 1 día tarde, pero no hubo queja por parte de la empresa compradora',26);
+INSERT INTO Pedidos VALUES (50,TO_DATE('2008-03-17','YYYY-MM-DD'),TO_DATE('2008-08-09','YYYY-MM-DD'),NULL,'Pendiente','Al parecer, el pedido se ha extraviado a la altura de Sotalbo (�?vila)',26);
+INSERT INTO Pedidos VALUES (51,TO_DATE('2008-10-01','YYYY-MM-DD'),TO_DATE('2008-10-14','YYYY-MM-DD'),TO_DATE('2008-10-14','YYYY-MM-DD'),'Entregado','Todo se entregó a tiempo y en perfecto estado, a pesar del pésimo estado de las carreteras.',26);
+INSERT INTO Pedidos VALUES (52,TO_DATE('2008-12-07','YYYY-MM-DD'),TO_DATE('2008-12-21','YYYY-MM-DD'),NULL,'Pendiente','El transportista ha llamado a Eva María para indicarle que el pedido llegará más tarde de lo esperado.',26);
+INSERT INTO Pedidos VALUES (53,TO_DATE('2008-10-15','YYYY-MM-DD'),TO_DATE('2008-11-15','YYYY-MM-DD'),TO_DATE('2008-11-09','YYYY-MM-DD'),'Entregado','El pedido llega 6 dias antes',13);
+INSERT INTO Pedidos VALUES (54,TO_DATE('2008-01-11','YYYY-MM-DD'),TO_DATE('2008-02-11','YYYY-MM-DD'),NULL,'Pendiente',NULL,14);
+INSERT INTO Pedidos VALUES (55,TO_DATE('2008-12-10','YYYY-MM-DD'),TO_DATE('2008-01-10','YYYY-MM-DD'),TO_DATE('2008-01-11','YYYY-MM-DD'),'Entregado','Retrasado 1 dia por problemas de transporte',14);
+INSERT INTO Pedidos VALUES (56,TO_DATE('2008-12-19','YYYY-MM-DD'),TO_DATE('2008-01-20','YYYY-MM-DD'),NULL,'Rechazado','El cliente a anulado el pedido el dia 2009-01-10',13);
+INSERT INTO Pedidos VALUES (57,TO_DATE('2008-01-05','YYYY-MM-DD'),TO_DATE('2008-02-05','YYYY-MM-DD'),NULL,'Pendiente',NULL,13);
+INSERT INTO Pedidos VALUES (58,TO_DATE('2008-01-24','YYYY-MM-DD'),TO_DATE('2008-01-31','YYYY-MM-DD'),TO_DATE('2008-01-30','YYYY-MM-DD'),'Entregado','TODO CORRECTO',3);
+INSERT INTO Pedidos VALUES (59,TO_DATE('2008-11-09','YYYY-MM-DD'),TO_DATE('2008-11-14','YYYY-MM-DD'),TO_DATE('2008-11-14','YYYY-MM-DD'),'Entregado','El cliente paga la mitad con tarjeta y la otra mitad con efectivo, se le realizan dos facturas',1);
+INSERT INTO Pedidos VALUES (60,TO_DATE('2008-12-22','YYYY-MM-DD'),TO_DATE('2008-12-27','YYYY-MM-DD'),TO_DATE('2008-12-28','YYYY-MM-DD'),'Entregado','El cliente comprueba la integridad del paquete, todo correcto',1);
+INSERT INTO Pedidos VALUES (61,TO_DATE('2008-01-15','YYYY-MM-DD'),TO_DATE('2008-01-20','YYYY-MM-DD'),NULL,'Pendiente','El cliente llama para confirmar la fecha - Esperando al proveedor',3);
+INSERT INTO Pedidos VALUES (62,TO_DATE('2008-01-20','YYYY-MM-DD'),TO_DATE('2008-01-27','YYYY-MM-DD'),NULL,'Pendiente','El cliente requiere que el pedido se le entregue de 16:00h a 22:00h',1);
+INSERT INTO Pedidos VALUES (63,TO_DATE('2008-01-22','YYYY-MM-DD'),TO_DATE('2008-01-27','YYYY-MM-DD'),NULL,'Pendiente','El cliente requiere que el pedido se le entregue de 9:00h a 13:00h',1);
+INSERT INTO Pedidos VALUES (64,TO_DATE('2008-01-24','YYYY-MM-DD'),TO_DATE('2008-01-31','YYYY-MM-DD'),TO_DATE('2008-01-30','YYYY-MM-DD'),'Entregado','TODO CORRECTO',1);
+INSERT INTO Pedidos VALUES (65,TO_DATE('2008-02-02','YYYY-MM-DD'),TO_DATE('2008-02-08','YYYY-MM-DD'),NULL,'Rechazado','El cliente carece de saldo en la cuenta asociada',1);
+INSERT INTO Pedidos VALUES (66,TO_DATE('2008-02-06','YYYY-MM-DD'),TO_DATE('2008-02-12','YYYY-MM-DD'),NULL,'Rechazado','El cliente anula la operacion para adquirir mas productos',3);
+INSERT INTO Pedidos VALUES (67,TO_DATE('2008-02-07','YYYY-MM-DD'),TO_DATE('2008-02-13','YYYY-MM-DD'),NULL,'Entregado','El pedido aparece como entregado pero no sabemos en que fecha',3);
+INSERT INTO Pedidos VALUES (68,TO_DATE('2008-02-10','YYYY-MM-DD'),TO_DATE('2008-02-17','YYYY-MM-DD'),TO_DATE('2008-02-20','YYYY-MM-DD'),'Entregado','El cliente se queja bastante de la espera asociada al producto',3);
+INSERT INTO Pedidos VALUES (74,TO_DATE('2008-01-14','YYYY-MM-DD'),TO_DATE('2008-01-22','YYYY-MM-DD'),NULL,'Rechazado','El pedido no llego el dia que queria el cliente por fallo del transporte',15);
+INSERT INTO Pedidos VALUES (75,TO_DATE('2008-01-11','YYYY-MM-DD'),TO_DATE('2008-01-13','YYYY-MM-DD'),TO_DATE('2008-01-13','YYYY-MM-DD'),'Entregado','El pedido llego perfectamente',15);
+INSERT INTO Pedidos VALUES (76,TO_DATE('2008-11-15','YYYY-MM-DD'),TO_DATE('2008-11-23','YYYY-MM-DD'),TO_DATE('2008-11-23','YYYY-MM-DD'),'Entregado',NULL,15);
+INSERT INTO Pedidos VALUES (77,TO_DATE('2008-01-03','YYYY-MM-DD'),TO_DATE('2008-01-08','YYYY-MM-DD'),NULL,'Pendiente','El pedido no pudo ser entregado por problemas meteorologicos',15);
+INSERT INTO Pedidos VALUES (78,TO_DATE('2008-12-15','YYYY-MM-DD'),TO_DATE('2008-12-17','YYYY-MM-DD'),TO_DATE('2008-12-17','YYYY-MM-DD'),'Entregado','Fue entregado, pero faltaba mercancia que sera entregada otro dia',15);
+INSERT INTO Pedidos VALUES (79,TO_DATE('2008-01-12','YYYY-MM-DD'),TO_DATE('2008-01-13','YYYY-MM-DD'),TO_DATE('2008-01-13','YYYY-MM-DD'),'Entregado',NULL,28);
+INSERT INTO Pedidos VALUES (80,TO_DATE('2008-01-25','YYYY-MM-DD'),TO_DATE('2008-01-26','YYYY-MM-DD'),NULL,'Pendiente','No terminó el pago',28);
+INSERT INTO Pedidos VALUES (81,TO_DATE('2008-01-18','YYYY-MM-DD'),TO_DATE('2008-01-24','YYYY-MM-DD'),NULL,'Rechazado','Los productos estaban en mal estado',28);
+INSERT INTO Pedidos VALUES (82,TO_DATE('2008-01-20','YYYY-MM-DD'),TO_DATE('2008-01-29','YYYY-MM-DD'),TO_DATE('2008-01-29','YYYY-MM-DD'),'Entregado','El pedido llego un poco mas tarde de la hora fijada',28);
+INSERT INTO Pedidos VALUES (83,TO_DATE('2008-01-24','YYYY-MM-DD'),TO_DATE('2008-01-28','YYYY-MM-DD'),NULL,'Entregado',NULL,28);
+INSERT INTO Pedidos VALUES (89,TO_DATE('2008-10-05','YYYY-MM-DD'),TO_DATE('2008-12-13','YYYY-MM-DD'),TO_DATE('2008-12-10','YYYY-MM-DD'),'Entregado','La entrega se realizo dias antes de la fecha esperada por lo que el cliente quedo satisfecho',35);
+INSERT INTO Pedidos VALUES (90,TO_DATE('2008-02-07','YYYY-MM-DD'),TO_DATE('2008-02-17','YYYY-MM-DD'),NULL,'Pendiente','Debido a la nevada caída en la sierra, el pedido no podrá llegar hasta el día ',27);
+INSERT INTO Pedidos VALUES (91,TO_DATE('2008-03-18','YYYY-MM-DD'),TO_DATE('2008-03-29','YYYY-MM-DD'),TO_DATE('2008-03-27','YYYY-MM-DD'),'Entregado','Todo se entregó a su debido tiempo, incluso con un día de antelación',27);
+INSERT INTO Pedidos VALUES (92,TO_DATE('2008-04-19','YYYY-MM-DD'),TO_DATE('2008-04-30','YYYY-MM-DD'),TO_DATE('2008-05-03','YYYY-MM-DD'),'Entregado','El pedido se entregó tarde debido a la festividad celebrada en España durante esas fechas',27);
+INSERT INTO Pedidos VALUES (93,TO_DATE('2008-05-03','YYYY-MM-DD'),TO_DATE('2008-05-30','YYYY-MM-DD'),TO_DATE('2008-05-17','YYYY-MM-DD'),'Entregado','El pedido se entregó antes de lo esperado.',27);
+INSERT INTO Pedidos VALUES (94,TO_DATE('2008-10-18','YYYY-MM-DD'),TO_DATE('2008-11-01','YYYY-MM-DD'),NULL,'Pendiente','El pedido está en camino.',27);
+INSERT INTO Pedidos VALUES (95,TO_DATE('2008-01-04','YYYY-MM-DD'),TO_DATE('2008-01-19','YYYY-MM-DD'),TO_DATE('2008-01-19','YYYY-MM-DD'),'Entregado',NULL,35);
+INSERT INTO Pedidos VALUES (96,TO_DATE('2008-03-20','YYYY-MM-DD'),TO_DATE('2008-04-12','YYYY-MM-DD'),TO_DATE('2008-04-13','YYYY-MM-DD'),'Entregado','La entrega se retraso un dia',35);
+INSERT INTO Pedidos VALUES (97,TO_DATE('2008-10-08','YYYY-MM-DD'),TO_DATE('2008-11-25','YYYY-MM-DD'),TO_DATE('2008-11-25','YYYY-MM-DD'),'Entregado',NULL,35);
+INSERT INTO Pedidos VALUES (98,TO_DATE('2008-01-08','YYYY-MM-DD'),TO_DATE('2008-02-13','YYYY-MM-DD'),NULL,'Pendiente',NULL,35);
+INSERT INTO Pedidos VALUES (99,TO_DATE('2008-02-15','YYYY-MM-DD'),TO_DATE('2008-02-27','YYYY-MM-DD'),NULL,'Pendiente',NULL,16);
+INSERT INTO Pedidos VALUES (100,TO_DATE('2008-01-10','YYYY-MM-DD'),TO_DATE('2008-01-15','YYYY-MM-DD'),TO_DATE('2008-01-15','YYYY-MM-DD'),'Entregado','El pedido llego perfectamente',16);
+INSERT INTO Pedidos VALUES (101,TO_DATE('2008-03-07','YYYY-MM-DD'),TO_DATE('2008-03-27','YYYY-MM-DD'),NULL,'Rechazado','El pedido fue rechazado por el cliente',16);
+INSERT INTO Pedidos VALUES (102,TO_DATE('2008-12-28','YYYY-MM-DD'),TO_DATE('2008-01-08','YYYY-MM-DD'),TO_DATE('2008-01-08','YYYY-MM-DD'),'Entregado','Pago pendiente',16);
+INSERT INTO Pedidos VALUES (103,TO_DATE('2008-01-15','YYYY-MM-DD'),TO_DATE('2008-01-20','YYYY-MM-DD'),TO_DATE('2008-01-24','YYYY-MM-DD'),'Pendiente',NULL,30);
+INSERT INTO Pedidos VALUES (104,TO_DATE('2008-03-02','YYYY-MM-DD'),TO_DATE('2008-03-06','YYYY-MM-DD'),TO_DATE('2008-03-06','YYYY-MM-DD'),'Entregado',NULL,30);
+INSERT INTO Pedidos VALUES (105,TO_DATE('2008-02-14','YYYY-MM-DD'),TO_DATE('2008-02-20','YYYY-MM-DD'),NULL,'Rechazado','el producto ha sido rechazado por la pesima calidad',30);
+INSERT INTO Pedidos VALUES (106,TO_DATE('2008-05-13','YYYY-MM-DD'),TO_DATE('2008-05-15','YYYY-MM-DD'),TO_DATE('2008-05-20','YYYY-MM-DD'),'Pendiente',NULL,30);
+INSERT INTO Pedidos VALUES (107,TO_DATE('2008-04-06','YYYY-MM-DD'),TO_DATE('2008-04-10','YYYY-MM-DD'),TO_DATE('2008-04-10','YYYY-MM-DD'),'Entregado',NULL,30);
+INSERT INTO Pedidos VALUES (108,TO_DATE('2008-04-09','YYYY-MM-DD'),TO_DATE('2008-04-15','YYYY-MM-DD'),TO_DATE('2008-04-15','YYYY-MM-DD'),'Entregado',NULL,16);
+INSERT INTO Pedidos VALUES (109,TO_DATE('2008-05-25','YYYY-MM-DD'),TO_DATE('2008-07-28','YYYY-MM-DD'),TO_DATE('2008-07-28','YYYY-MM-DD'),'Entregado',NULL,38);
+INSERT INTO Pedidos VALUES (110,TO_DATE('2008-03-19','YYYY-MM-DD'),TO_DATE('2008-04-24','YYYY-MM-DD'),TO_DATE('2008-04-24','YYYY-MM-DD'),'Entregado',NULL,38);
+INSERT INTO Pedidos VALUES (111,TO_DATE('2008-03-05','YYYY-MM-DD'),TO_DATE('2008-03-30','YYYY-MM-DD'),TO_DATE('2008-03-30','YYYY-MM-DD'),'Entregado',NULL,36);
+INSERT INTO Pedidos VALUES (112,TO_DATE('2008-03-05','YYYY-MM-DD'),TO_DATE('2008-04-06','YYYY-MM-DD'),TO_DATE('2008-05-07','YYYY-MM-DD'),'Pendiente',NULL,36);
+INSERT INTO Pedidos VALUES (113,TO_DATE('2008-10-28','YYYY-MM-DD'),TO_DATE('2008-11-09','YYYY-MM-DD'),TO_DATE('2008-01-09','YYYY-MM-DD'),'Rechazado','El producto ha sido rechazado por la tardanza de el envio',36);
+INSERT INTO Pedidos VALUES (114,TO_DATE('2008-01-15','YYYY-MM-DD'),TO_DATE('2008-01-29','YYYY-MM-DD'),TO_DATE('2008-01-31','YYYY-MM-DD'),'Entregado','El envio llego dos dias más tarde debido al mal tiempo',36);
+INSERT INTO Pedidos VALUES (115,TO_DATE('2008-11-29','YYYY-MM-DD'),TO_DATE('2008-01-26','YYYY-MM-DD'),TO_DATE('2008-02-27','YYYY-MM-DD'),'Pendiente',NULL,36);
+INSERT INTO Pedidos VALUES (116,TO_DATE('2008-06-28','YYYY-MM-DD'),TO_DATE('2008-08-01','YYYY-MM-DD'),TO_DATE('2008-08-01','YYYY-MM-DD'),'Entregado',NULL,38);
+INSERT INTO Pedidos VALUES (117,TO_DATE('2008-08-25','YYYY-MM-DD'),TO_DATE('2008-10-01','YYYY-MM-DD'),NULL,'Rechazado','El pedido ha sido rechazado por la acumulacion de pago pendientes del cliente',38);
+INSERT INTO Pedidos VALUES (118,TO_DATE('2008-02-15','YYYY-MM-DD'),TO_DATE('2008-02-27','YYYY-MM-DD'),NULL,'Pendiente',NULL,16);
+INSERT INTO Pedidos VALUES (119,TO_DATE('2008-01-10','YYYY-MM-DD'),TO_DATE('2008-01-15','YYYY-MM-DD'),TO_DATE('2008-01-15','YYYY-MM-DD'),'Entregado','El pedido llego perfectamente',16);
+INSERT INTO Pedidos VALUES (120,TO_DATE('2008-03-07','YYYY-MM-DD'),TO_DATE('2008-03-27','YYYY-MM-DD'),NULL,'Rechazado','El pedido fue rechazado por el cliente',16);
+INSERT INTO Pedidos VALUES (121,TO_DATE('2008-12-28','YYYY-MM-DD'),TO_DATE('2008-01-08','YYYY-MM-DD'),TO_DATE('2008-01-08','YYYY-MM-DD'),'Entregado','Pago pendiente',16);
+INSERT INTO Pedidos VALUES (122,TO_DATE('2008-04-09','YYYY-MM-DD'),TO_DATE('2008-04-15','YYYY-MM-DD'),TO_DATE('2008-04-15','YYYY-MM-DD'),'Entregado',,NULL,16);
+INSERT INTO Pedidos VALUES (123,TO_DATE('2008-01-15','YYYY-MM-DD'),TO_DATE('2008-01-20','YYYY-MM-DD'),TO_DATE('2008-01-24','YYYY-MM-DD'),'Pendiente',NULL,30);
+INSERT INTO Pedidos VALUES (124,TO_DATE('2008-03-02','YYYY-MM-DD'),TO_DATE('2008-03-06','YYYY-MM-DD'),TO_DATE('2008-03-06','YYYY-MM-DD'),'Entregado',NULL,30);
+INSERT INTO Pedidos VALUES (125,TO_DATE('2008-02-14','YYYY-MM-DD'),TO_DATE('2008-02-20','YYYY-MM-DD'),NULL,'Rechazado','el producto ha sido rechazado por la pesima calidad',30);
+INSERT INTO Pedidos VALUES (126,TO_DATE('2008-05-13','YYYY-MM-DD'),TO_DATE('2008-05-15','YYYY-MM-DD'),TO_DATE('2008-05-20','YYYY-MM-DD'),'Pendiente',NULL,30);
+INSERT INTO Pedidos VALUES (127,TO_DATE('2008-04-06','YYYY-MM-DD'),TO_DATE('2008-04-10','YYYY-MM-DD'),TO_DATE('2008-04-10','YYYY-MM-DD'),'Entregado',NULL,30);
+INSERT INTO Pedidos VALUES (128,TO_DATE('2008-11-10','YYYY-MM-DD'),TO_DATE('2008-12-10','YYYY-MM-DD'),TO_DATE('2008-12-29','YYYY-MM-DD'),'Rechazado','El pedido ha sido rechazado por el cliente por el retraso en la entrega',38);
 
 CREATE TABLE Productos (
   CodigoProducto varchar(15) NOT NULL,
@@ -287,8 +285,9 @@ CREATE TABLE Productos (
   CantidadEnStock smallint NOT NULL,
   PrecioVenta number(15,2) NOT NULL,
   PrecioProveedor number(15,2) DEFAULT NULL,
-  CONSTRAINT COD_PRODUCTO_PK PRIMARY KEY (CodigoProducto),
-  CONSTRAINT Productos_gamaFK FOREIGN KEY (Gama) REFERENCES GamasProductos (Gama)
+  CONSTRAINT Productos_Cod_PK PRIMARY KEY (CodigoProducto),
+  CONSTRAINT Productos_gama_FK FOREIGN KEY (Gama) REFERENCES GamasProductos (Gama),
+  CONSTRAINT Productos_gama_CK CHECK ( Gama=INITCAP(Gama) )
 ) ;
 
 INSERT INTO Productos VALUES ('11679','Sierra de Poda 400MM','Herramientas','0,258','HiperGarden Tools','Gracias a la poda se consigue manipular un poco la naturaleza, dándole la forma que más nos guste. Este trabajo básico de jardinería también facilita que las plantas crezcan de un modo más equilibrado, y que las flores y los frutos vuelvan cada año con regularidad. Lo mejor es dar forma cuando los ejemplares son jóvenes, de modo que exijan pocos cuidados cuando sean adultos. Además de saber cuándo y cómo hay que podar, tener unas herramientas adecuadas para esta labor es también de vital importancia.',15,14,11);
@@ -575,9 +574,9 @@ CREATE TABLE DetallePedidos (
   Cantidad integer NOT NULL,
   PrecioUnidad number(15,2) NOT NULL,
   NumeroLinea smallint NOT NULL,
-  CONSTRAINT COD_PED_PRO_PK PRIMARY KEY (CodigoPedido,CodigoProducto),
-  CONSTRAINT DetallePedidos_PedidoFK FOREIGN KEY (CodigoPedido) REFERENCES Pedidos (CodigoPedido),
-  CONSTRAINT DetallePedidos_ProductoFK FOREIGN KEY (CodigoProducto) REFERENCES Productos (CodigoProducto)
+  CONSTRAINT DetallePedidos_Cod_PK PRIMARY KEY (CodigoPedido,CodigoProducto),
+  CONSTRAINT DetallePedidos_Pedido_FK FOREIGN KEY (CodigoPedido) REFERENCES Pedidos (CodigoPedido),
+  CONSTRAINT DetallePedidos_Producto_FK FOREIGN KEY (CodigoProducto) REFERENCES Productos (CodigoProducto)
 );
 
 INSERT INTO DetallePedidos VALUES (1,'FR-67',10,70,3);
@@ -878,35 +877,35 @@ CREATE TABLE Pagos (
   IDTransaccion varchar(50) NOT NULL,
   FechaPago date NOT NULL,
   Cantidad number(15,2) NOT NULL,
-  CONSTRAINT COD_CLI_TRAS_PK PRIMARY KEY (CodigoCliente,IDTransaccion),
-  CONSTRAINT Pagos_clienteFK FOREIGN KEY (CodigoCliente) REFERENCES Clientes (CodigoCliente),
-  CONSTRAINT FOR_PAG_CK CHECK(FORMAPAGO IN('PayPal','Cheque','Transferencia'))
+  CONSTRAINT Pagos_Cod_ID_PK PRIMARY KEY (CodigoCliente,IDTransaccion),
+  CONSTRAINT Pagos_cliente_FK FOREIGN KEY (CodigoCliente) REFERENCES Clientes (CodigoCliente),
+  CONSTRAINT Pagos_FormaPago_CK CHECK (FormaPago IN ('PayPal', 'Transferencia', 'Cheque'))
 ) ;
-INSERT INTO Pagos VALUES (1,'PayPal','ak-std-000001','2008-11-10',2000);
-INSERT INTO Pagos VALUES (1,'PayPal','ak-std-000002','2008-12-10',2000);
-INSERT INTO Pagos VALUES (3,'PayPal','ak-std-000003','2009-01-16',5000);
-INSERT INTO Pagos VALUES (3,'PayPal','ak-std-000004','2009-02-16',5000);
-INSERT INTO Pagos VALUES (3,'PayPal','ak-std-000005','2009-02-19',926);
-INSERT INTO Pagos VALUES (4,'PayPal','ak-std-000006','2007-01-08',20000);
-INSERT INTO Pagos VALUES (4,'PayPal','ak-std-000007','2007-01-08',20000);
-INSERT INTO Pagos VALUES (4,'PayPal','ak-std-000008','2007-01-08',20000);
-INSERT INTO Pagos VALUES (4,'PayPal','ak-std-000009','2007-01-08',20000);
-INSERT INTO Pagos VALUES (4,'PayPal','ak-std-000010','2007-01-08',1849);
-INSERT INTO Pagos VALUES (5,'Transferencia','ak-std-000011','2006-01-18',23794);
-INSERT INTO Pagos VALUES (7,'Cheque','ak-std-000012','2009-01-13',2390);
-INSERT INTO Pagos VALUES (9,'PayPal','ak-std-000013','2009-01-06',929);
-INSERT INTO Pagos VALUES (13,'PayPal','ak-std-000014','2008-08-04',2246);
-INSERT INTO Pagos VALUES (14,'PayPal','ak-std-000015','2008-07-15',4160);
-INSERT INTO Pagos VALUES (15,'PayPal','ak-std-000016','2009-01-15',2081);
-INSERT INTO Pagos VALUES (15,'PayPal','ak-std-000035','2009-02-15',10000);
-INSERT INTO Pagos VALUES (16,'PayPal','ak-std-000017','2009-02-16',4399);
-INSERT INTO Pagos VALUES (19,'PayPal','ak-std-000018','2009-03-06',232);
-INSERT INTO Pagos VALUES (23,'PayPal','ak-std-000019','2009-03-26',272);
-INSERT INTO Pagos VALUES (26,'PayPal','ak-std-000020','2008-03-18',18846);
-INSERT INTO Pagos VALUES (27,'PayPal','ak-std-000021','2009-02-08',10972);
-INSERT INTO Pagos VALUES (28,'PayPal','ak-std-000022','2009-01-13',8489);
-INSERT INTO Pagos VALUES (30,'PayPal','ak-std-000024','2009-01-16',7863);
-INSERT INTO Pagos VALUES (35,'PayPal','ak-std-000025','2007-10-06',3321);
-INSERT INTO Pagos VALUES (38,'PayPal','ak-std-000026','2006-05-26',1171);
+INSERT INTO Pagos VALUES (1,'PayPal','ak-std-000001',TO_DATE('2008-11-10','YYYY-MM-DD'),2000);
+INSERT INTO Pagos VALUES (1,'PayPal','ak-std-000002',TO_DATE('2008-12-10','YYYY-MM-DD'),2000);
+INSERT INTO Pagos VALUES (3,'PayPal','ak-std-000003',TO_DATE('2008-01-16','YYYY-MM-DD'),5000);
+INSERT INTO Pagos VALUES (3,'PayPal','ak-std-000004',TO_DATE('2008-02-16','YYYY-MM-DD'),5000);
+INSERT INTO Pagos VALUES (3,'PayPal','ak-std-000005',TO_DATE('2008-02-19','YYYY-MM-DD'),926);
+INSERT INTO Pagos VALUES (4,'PayPal','ak-std-000006',TO_DATE('2008-01-08','YYYY-MM-DD'),20000);
+INSERT INTO Pagos VALUES (4,'PayPal','ak-std-000007',TO_DATE('2008-01-08','YYYY-MM-DD'),20000);
+INSERT INTO Pagos VALUES (4,'PayPal','ak-std-000008',TO_DATE('2008-01-08','YYYY-MM-DD'),20000);
+INSERT INTO Pagos VALUES (4,'PayPal','ak-std-000009',TO_DATE('2008-01-08','YYYY-MM-DD'),20000);
+INSERT INTO Pagos VALUES (4,'PayPal','ak-std-000010',TO_DATE('2008-01-08','YYYY-MM-DD'),1849);
+INSERT INTO Pagos VALUES (5,'Transferencia','ak-std-000011',TO_DATE('2008-01-18','YYYY-MM-DD'),23794);
+INSERT INTO Pagos VALUES (7,'Cheque','ak-std-000012',TO_DATE('2008-01-13','YYYY-MM-DD'),2390);
+INSERT INTO Pagos VALUES (9,'PayPal','ak-std-000013',TO_DATE('2008-01-06','YYYY-MM-DD'),929);
+INSERT INTO Pagos VALUES (13,'PayPal','ak-std-000014',TO_DATE('2008-08-04','YYYY-MM-DD'),2246);
+INSERT INTO Pagos VALUES (14,'PayPal','ak-std-000015',TO_DATE('2008-07-15','YYYY-MM-DD'),4160);
+INSERT INTO Pagos VALUES (15,'PayPal','ak-std-000016',TO_DATE('2008-01-15','YYYY-MM-DD'),2081);
+INSERT INTO Pagos VALUES (15,'PayPal','ak-std-000035',TO_DATE('2008-02-15','YYYY-MM-DD'),10000);
+INSERT INTO Pagos VALUES (16,'PayPal','ak-std-000017',TO_DATE('2008-02-16','YYYY-MM-DD'),4399);
+INSERT INTO Pagos VALUES (19,'PayPal','ak-std-000018',TO_DATE('2008-03-06','YYYY-MM-DD'),232);
+INSERT INTO Pagos VALUES (23,'PayPal','ak-std-000019',TO_DATE('2008-03-26','YYYY-MM-DD'),272);
+INSERT INTO Pagos VALUES (26,'PayPal','ak-std-000020',TO_DATE('2008-03-18','YYYY-MM-DD'),18846);
+INSERT INTO Pagos VALUES (27,'PayPal','ak-std-000021',TO_DATE('2008-02-08','YYYY-MM-DD'),10972);
+INSERT INTO Pagos VALUES (28,'PayPal','ak-std-000022',TO_DATE('2008-01-13','YYYY-MM-DD'),8489);
+INSERT INTO Pagos VALUES (30,'PayPal','ak-std-000024',TO_DATE('2008-01-16','YYYY-MM-DD'),7863);
+INSERT INTO Pagos VALUES (35,'PayPal','ak-std-000025',TO_DATE('2008-10-06','YYYY-MM-DD'),3321);
+INSERT INTO Pagos VALUES (38,'PayPal','ak-std-000026',TO_DATE('2008-05-26','YYYY-MM-DD'),1171);
 
 
