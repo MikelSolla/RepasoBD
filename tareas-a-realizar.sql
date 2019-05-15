@@ -74,8 +74,11 @@ UPDATE EMPLEADOS
 SET COMISION=0;
 END ;
 
- /* Crear un disparador (trigger) que controle antes de modificar
- el salario de un empleado si su salario es superior a 3000.*/
+CREATE OR REPLACE TRIGGER EMP.SALARIO
+after insert into empleadosfor each row
+END;
+
+
 CREATE OR REPLACE TRIGGER TRIG_SALARIO
 BEFORE
 UPDATE OF SALARIO
