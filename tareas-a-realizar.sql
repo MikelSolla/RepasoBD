@@ -41,20 +41,17 @@ WHERE C.CODIGOCLIENTE= P.CODIGOCLIENTE
 AND(
 P.CANTIDAD=(SELECT MAX(CANTIDAD)FROM PAGOS)
 OR
-P.CANTIDAD=(SELECT MIN(CANTIDAD)FROM PAGOS))
-;
+P.CANTIDAD=(SELECT MIN(CANTIDAD)FROM PAGOS));
 
 /*Añade a la tabla empleados las columnas denominadas salario, numérica de 10 posiciones, y otra denominada comisión, numérica de 6 posiciones. */
 ALTER TABLE EMPLEADOS ADD SALARIO NUMBER(10);
 ALTER TABLE EMPLEADOS ADD COMISION NUMBER(6);
+
 /*Crea un procedimiento almacenado denomiando p7_salari_comi 
 que inserta los diferentes valores para el salario dependiendo del puesto que tenga el empleado*/
-SELECT SALARIO
-FROM EMPLEADOS;
-
-
 CREATE OR REPLACE PROCEDURE p7_salari_comi 
-IS BEGIN
+IS 
+BEGIN
 UPDATE EMPLEADOS
 SET SALARIO=1100
 WHERE UPPER(PUESTO)='SECRETARIA';
@@ -77,11 +74,33 @@ UPDATE EMPLEADOS
 SET COMISION=0;
 END ;
 
-SELECT COMISION
-FROM EMPLEADOS;
-  
+ /* Crear un disparador (trigger) que controle antes de modificar
+ el salario de un empleado si su salario es superior a 3000.*/
+CREATE OR REPLACE TRIGGER TRIG_SALARIO
+BEFORE
+UPDATE OF SALARIO
+ON EMPLEADOS 
 
-                                                  
+DECLARE
+V_SALARIO EMPLEADOS.SALARIO%TYPE;
+
+BEGIN
+SELECT SALARIO 
+FROM EMPLEADOS;
+IF V_SALARIO > 3000 THEN 
+UPDATE EMPLEADOS
+SET COMISION=SALARIO*0.02;
+END IF;
+IF V_SALARIO < 3000 THEN 
+UPDATE EMPLEADOS
+SET COMISION=SALARIO*0.05;
+END IF;
+END TRIG_SALARIO;
+
+/*Crea un trigger que cuando se borre una oficina cambie en la tabla empleados aquellos 
+cuyo código de oficina es la de la oficina borrada. En los empleados se pondrá la cadena ‘SIN’*/
+CREATE OR REPLACE TRIGGER TRIG_BORRAR_OFI
+AFTER DELETE
                                                   
                                                   
                                                   
